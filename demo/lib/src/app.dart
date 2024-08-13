@@ -33,8 +33,8 @@ class _MyAppState extends State<MyApp> {
                   str = 'start';
                 }
                 else{
-                  LocationHandler.instance.handleLocationPermission(context);
-                  LocationHandler.instance.updateLocation();
+                  await LocationHandler.instance.handleLocationPermission(context);
+                  await LocationHandler.instance.updateLocation();
                   service.startService();
                   str = 'stop';
                 }

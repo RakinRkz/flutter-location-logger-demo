@@ -4,9 +4,9 @@ import 'package:geolocator/geolocator.dart';
 
 class LocationHandler {
   var hasPermission = false;
-  var userLocation;
+  var userLocation='';
   var userCoordinates;
-  var userCoordinates_string;
+  var userCoordinates_string='';
 
   LocationHandler._privateConstructor();
 

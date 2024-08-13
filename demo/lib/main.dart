@@ -25,7 +25,9 @@ Future<void> initService()async{
     iosConfiguration: IosConfiguration(), 
     androidConfiguration: AndroidConfiguration(
       onStart: onStart, 
-      isForegroundMode: true
+      isForegroundMode: true,
+      autoStart: false,
+      autoStartOnBoot: false,
     )
   );
 
