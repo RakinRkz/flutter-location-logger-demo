@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:demo/src/location_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
@@ -115,11 +117,27 @@ void onStart(ServiceInstance service) async {
   }
 
   service.on('stopService').listen((event) {
+    print('stoping');
     service.stopSelf();
+    print('stopped');
+  });
+
+  service.on('loc').listen((event) {
+    print('lololoc');
   });
 
   // bring to foreground
-  Timer.periodic(const Duration(seconds: 1), (timer) async {
+  Timer.periodic(const Duration(seconds: 3), (timer) async {
+    String locationData = '';
+    await Geolocator.getCurrentPosition(
+            locationSettings: LocationSettings(accuracy: LocationAccuracy.high))
+        .then((Position position) {
+      locationData = position.toString();
+      print(locationData);
+    }).catchError((e) {
+      debugPrint(e);
+    });
+
     if (service is AndroidServiceInstance) {
       if (await service.isForegroundService()) {
         /// OPTIONAL for use custom notification
@@ -127,7 +145,7 @@ void onStart(ServiceInstance service) async {
         flutterLocalNotificationsPlugin.show(
           888,
           'COOL SERVICE',
-          'Awesome ${DateTime.now()}',
+          'Your Location $locationData',
           const NotificationDetails(
             android: AndroidNotificationDetails(
               'my_foreground',
@@ -236,6 +254,23 @@ class _MyAppState extends State<MyApp> {
             const Expanded(
               child: LogView(),
             ),
+            ElevatedButton(
+                onPressed: () async {
+                  await LocationHandler.instance
+                      .handleLocationPermission(context);
+                  await Geolocator.getCurrentPosition(
+                          locationSettings:
+                              LocationSettings(accuracy: LocationAccuracy.high))
+                      .then((Position position) {
+                    print(position.toString());
+                  }).catchError((e) {
+                    debugPrint(e);
+                  });
+                  // FlutterBackgroundService().invoke('loc');
+                  final service = FlutterBackgroundService();
+                  service.invoke('loc');
+                },
+                child: Text('Print Location'))
           ],
         ),
       ),
