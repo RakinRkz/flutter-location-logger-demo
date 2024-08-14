@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:demo/src/app.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -85,6 +86,19 @@ Future<bool> onIosBackground(ServiceInstance service) async {
   return true;
 }
 
+Future<String> getLoc() async{
+  String locationData = '';
+    await Geolocator.getCurrentPosition(
+            locationSettings: LocationSettings(accuracy: LocationAccuracy.high))
+        .then((Position position) {
+      locationData = position.toString();
+      print(locationData);
+    }).catchError((e) {
+      debugPrint(e);
+    });
+    return locationData;
+}
+
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
   // Only available for flutter 3.0.0 and later
@@ -123,14 +137,8 @@ void onStart(ServiceInstance service) async {
   // bring to foreground
   Timer.periodic(const Duration(seconds: 3), (timer) async {
     String locationData = '';
-    await Geolocator.getCurrentPosition(
-            locationSettings: LocationSettings(accuracy: LocationAccuracy.high))
-        .then((Position position) {
-      locationData = position.toString();
-      print(locationData);
-    }).catchError((e) {
-      debugPrint(e);
-    });
+
+    locationData = test;
 
     if (service is AndroidServiceInstance) {
       if (await service.isForegroundService()) {

@@ -3,3 +3,4 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 
 import 'location_handler.dart';
 
+String test = "test at app";
